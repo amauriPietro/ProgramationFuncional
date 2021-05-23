@@ -1,0 +1,81 @@
+--Bubble sort
+--Original
+bolha::[Int]->([Int], Int)
+bolha [] = ([], 0)
+bolha lst = bolhaOrd lst (length lst)
+
+bolhaOrd::[Int]->Int->([Int],Int)
+bolhaOrd lst 0 = (lst, 0)
+bolhaOrd lst n = ((fst(b)) ,(snd(b) + snd(a)))
+   where a = troca lst
+         b = bolhaOrd (fst(a)) (n-1)
+
+troca::[Int]->([Int], Int)
+troca [x] = ([x], 0)
+troca (x:y:lst)
+   | x > y = (y:fst(a), snd(a) + 1)
+   | otherwise = (x:fst(b),snd(b))
+   where a = troca(x:lst)
+         b = troca(y:lst)
+
+--var1
+bolha2::[Int]->([Int], Int)
+bolha2 [] = ([], 0)
+bolha2 lst = bolhaOrd2 lst (length lst)
+
+bolhaOrd2::[Int]->Int->([Int],Int)
+bolhaOrd2 lst 0 = (lst, 0)
+bolhaOrd2 lst n = if(snd(a) /= 0) then ((fst(b)) ,(snd(b) + snd(a)))
+                 else (lst, snd(b))
+   where a = troca lst
+         b = bolhaOrd (fst(a)) (n-1)
+
+--var2
+
+--Selection sort
+--Original by me
+selection::[Int]->[Int]
+selection [] = []
+selection lst = a:(selection(rmv lst a))
+                where a = minimum lst
+
+rmv::[Int]->Int->[Int]
+rmv (x:lst) n = if(x == n) then lst
+                else x:(rmv lst n)
+
+--Selection v2
+--selectionV2
+
+--Insertion Sorte
+--Original by me
+insertion::[Int]->[Int]
+insertion [] = []
+insertion (x:lst) = insere (insertion lst) x
+
+insere::[Int]->Int->[Int]
+insere [] n = [n]
+insere (x:lst) n = if(n <= x) then n:x:lst
+                 else x:(insere lst n)
+
+--Quicksort
+--Original by Gina
+qsort::[Int]->[Int]
+qsort [] = []
+qsort (p:lst) = qsort [y | y <- lst, y < p] ++ [p] ++ qsort [y | y <-lst, y >= p]
+
+
+--qsortVar2
+
+--Mergesort
+--by me
+mergesort::[Int]->[Int]
+mergesort [] = []
+mergesort [x] = [x]
+mergesort lst = intercala (mergesort(take metade lst)) (mergesort(drop ((length lst) - metade) lst))
+                 where metade = floor((fromIntegral(length lst))/2)
+
+intercala::[Int]->[Int]->[Int]
+intercala [] lst = lst
+intercala lst [] = lst
+intercala (x:lst1) (y:lst2) = if (x > y) then y:(intercala (x:lst1) lst2)
+                          else x:(intercala lst1 (y:lst2))
