@@ -98,21 +98,44 @@ insere (x:lst) n = if(n <= x) then n:x:lst
 
 --Quicksort
 --Original by Gina
-qsort::(Ord t)=>[t]->[t]
-qsort [] = []
-qsort (p:lst) = qsort [y | y <- lst, y < p] ++ [p] ++ qsort [y | y <-lst, y >= p]
-
+qsort::(Ord t)=>[t]->([t], Int)
+qsort [] = ([], 0)
+qsort (p:lst) = (fst(lst1) ++ [p] ++ fst(lst2), snd(lst1) + snd(lst2) + (2 * length lst))
+   where lst1 = qsort [y | y <- lst, y < p]
+         lst2 = qsort [y | y <- lst, y >= p]
 --Variação 1
-divide::(Ord t)=>[t]->t->([t],[t], Int)
-divide [] n = ([], [], 0)
+divide::(Ord t)=>[t]->t->([t],[t])
+divide [] n = ([], [])
 divide (x:lst) n
-   |x < n = ((x:fst3(dvd)), snd3(dvd), trd3(dvd)+1)
-   |x > n = (fst3(dvd), (x:snd3(dvd)), trd3(dvd)+1)
-   |otherwise = (fst3(dvd), snd3(dvd), trd3(dvd)+1)
+   |x < n = ((x:fst(dvd)), snd(dvd))
+   |x >= n = (fst(dvd), (x:snd(dvd)))
+   |otherwise = (fst(dvd), snd(dvd))
    where dvd = divide lst n
 
+qsortVar1::(Ord t)=>[t]->([t], Int)
+qsortVar1 [] = ([], 0)
+qsortVar1 (p:lst) = (fst(qs1) ++ [p] ++ fst(qs2), length(p:lst) + snd(qs1) + snd(qs2))
+   where listas = divide lst p
+         qs1 = qsortVar1(fst(listas))
+         qs2 = qsortVar1(snd(listas))
+
 --qsortVar2
---qsortVar2::(Ord t)=>[t]->[t]
+meio::(Ord t)=>t->t->t->t
+meio a b c
+   |a > b && c > a = a
+   |b > a && c > b = b
+   |otherwise = c
+
+qsortVar2::(Ord t)=>[t]->([t], Int)
+qsortVar2 [] = ([], 0)
+qsortVar2 [x] = ([x], 0)
+qsortVar2 (x:y:[]) = if(x > y) then ((y:x:[]), 1)
+                     else ((x:y:[]), 1)
+qsortVar2 (p:q:s:lst) = (fst(qs1) ++ [pmed] ++ fst(qs2), length(p:lst) + snd(qs1) + snd(qs2))
+   where pmed = meio p q s
+         listas = divide lst pmed
+         qs1 = qsortVar1(fst(listas))
+         qs2 = qsortVar1(snd(listas))
 
 
 
