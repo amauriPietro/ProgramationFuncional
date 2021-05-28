@@ -72,32 +72,57 @@ bolhaOrd3 lst n = if(snd(a) /= 0) then ((fst(b)) ,(snd(b) + snd(a)))
          b = bolhaOrd (take (n-1) (fst(a))) (n-1)
 
 --Selection sort
---Original by me
---selection::(Ord t)=>[t]->([t], Int)
---selection [] = ([], 0)
---selection lst = (a:(selection(rmv lst a))
-                --where a = minimum lst
+--Original
+selection::(Ord t)=>[t]->([t], Int)
+selection [] = ([], 0)
+selection lst = (a:fst(slct), snd(slct) + (length lst))
+                where a = minimum lst
+                      slct = selection(rmv lst a)
 
-rmv::[Int]->Int->[Int]
+rmv::(Ord t)=>[t]->t->[t]
 rmv (x:lst) n = if(x == n) then lst
                 else x:(rmv lst n)
+--Selection V1
+--selectionV1::(Ord t)=>[t]->([t], Int)
+--selectionV1 [] = ([], 0)
+--selectionV1 lst = (a:fst(slct), snd(slct) + (length lst))
+                     --where slct = selection(rmv_menor lst)
 
---Selection v2
---selectionV2
+--rmv_menor::(Ord t)=>[t]->([t], Int)
+--rmv_menor [x] = ([x], 0)
+
+--Selection V2
+selectionv2::(Ord t)=>[t]->([t], Int)
+selectionv2 [] = ([], 0)
+selectionv2 lst = (a:fst(slct), snd(slct) + (length lst))
+                where a = foldr1 min lst
+                      slct = selection(rmv lst a)
 
 --Insertion Sort
---Original by me
-insertion::[Int]->[Int]
-insertion [] = []
-insertion (x:lst) = insere (insertion lst) x
+--Original
+insertion::(Ord t)=>[t]->([t], Int)
+insertion [] = ([], 0)
+insertion (x:lst) = (fst(insout), snd(ins) + snd(insout))
+                    where ins = insertion lst
+                          insout = insere (fst(ins)) x
 
-insere::[Int]->Int->[Int]
-insere [] n = [n]
-insere (x:lst) n = if(n <= x) then n:x:lst
-                 else x:(insere lst n)
+insere::(Ord t)=>[t]->t->([t], Int)
+insere [] n = ([n], 0)
+insere (x:lst) n = if(n <= x) then (n:x:lst, 1)
+                 else (x:fst(ins), snd(ins) + 1)
+                 where ins = insere lst n
 
+--InsertionV2
+insertionv2::[Int]->[Int]
+insertionv2 [] = []
+insertionv2 lst = foldr (insere2) [] lst
+
+insere2::Int->[Int]->[Int]
+insere2 n [] = [n]
+insere2 n (x:lst) = if(n <= x) then n:x:lst
+                 else x:(insere2 n lst)
 --Quicksort
---Original by Gina
+--Original
 qsort::(Ord t)=>[t]->([t], Int)
 qsort [] = ([], 0)
 qsort (p:lst) = (fst(lst1) ++ [p] ++ fst(lst2), snd(lst1) + snd(lst2) + (2 * length lst))
@@ -141,15 +166,20 @@ qsortVar2 (p:q:s:lst) = (fst(qs1) ++ [pmed] ++ fst(qs2), length(p:lst) + snd(qs1
 
 
 --Mergesort
---by me
-mergesort::[Int]->[Int]
-mergesort [] = []
-mergesort [x] = [x]
-mergesort lst = intercala (mergesort(take metade lst)) (mergesort(drop ((length lst) - metade) lst))
-                 where metade = floor((fromIntegral(length lst))/2)
+--Original
+mergesort::(Ord t)=>[t]->([t], Int)
+mergesort [] = ([], 0)
+mergesort [x] = ([x], 0)
+mergesort lst = (fst(interc), snd(merge1) + snd(merge2) + snd(interc))
+                 where metade = div(length(lst)) 2
+                       merge1 = mergesort(take metade lst)
+                       merge2 = mergesort(drop metade lst)
+                       interc = intercala (fst(merge1)) (fst(merge2))
 
-intercala::[Int]->[Int]->[Int]
-intercala [] lst = lst
-intercala lst [] = lst
-intercala (x:lst1) (y:lst2) = if (x > y) then y:(intercala (x:lst1) lst2)
-                          else x:(intercala lst1 (y:lst2))
+intercala::(Ord t)=>[t]->[t]->([t], Int)
+intercala [] lst = (lst, 0)
+intercala lst [] = (lst, 0)
+intercala (x:lst1) (y:lst2) = if (x > y) then (y:(fst(interc1)), snd(interc1) + 1)
+                          else (x:(fst(interc2)), snd(interc2) + 1)
+                          where interc1 = intercala (x:lst1) lst2
+                                interc2 = intercala lst1 (y:lst2)
